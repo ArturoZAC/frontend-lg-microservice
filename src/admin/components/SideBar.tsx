@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 
+import logosPeru from "../../assets/logo-logosperu.png";
+
 interface SidebarProps {
   open: boolean;
   onToggle: () => void;
@@ -44,7 +46,8 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between p-6 border-b border-primary-foreground/10">
-            {open && <h1 className="text-xl font-bold">CRM</h1>}
+            {/* {open && <img src={logosPeru} alt="logosperu" />} */}
+            {open && <h1>Logos Peru</h1>}
             <Button
               variant="ghost"
               size="icon"
