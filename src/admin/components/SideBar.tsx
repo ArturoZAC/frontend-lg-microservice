@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 
-import logosPeru from "../../assets/logo-logosperu.png";
+// import logosPeru from "../../assets/logo-logosperu.png";
 
 interface SidebarProps {
   open: boolean;
