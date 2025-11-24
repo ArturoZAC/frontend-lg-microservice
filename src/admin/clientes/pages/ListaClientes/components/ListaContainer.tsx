@@ -1,5 +1,3 @@
-"use client";
-
 import { MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +24,7 @@ interface Customer {
   tipo_documento: string;
   numero_documento: string;
   medio_ingreso: string;
-  created_at: string;
+  created_at?: string;
 }
 
 interface CustomersTableProps {
@@ -46,7 +44,7 @@ export function ListaContainer({ customers }: CustomersTableProps) {
             <TableHead>Tipo de Documento</TableHead>
             <TableHead>Número de Documento</TableHead>
             <TableHead>Medio de Ingreso</TableHead>
-            <TableHead>Fecha de Creación</TableHead>
+            {/* <TableHead>Fecha de Creación</TableHead> */}
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -67,7 +65,7 @@ export function ListaContainer({ customers }: CustomersTableProps) {
                     {customer.medio_ingreso}
                   </span>
                 </TableCell>
-                <TableCell className="text-xs">{customer.created_at}</TableCell>
+                {/* <TableCell className="text-xs">{customer.created_at}</TableCell> */}
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
