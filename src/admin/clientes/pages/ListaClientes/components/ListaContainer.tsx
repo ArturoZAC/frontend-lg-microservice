@@ -1,11 +1,11 @@
-import { MoreVertical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// import { MoreVertical } from "lucide-react";
+// import { Button } from "@/components/ui/button";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -14,6 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ActionDropdown } from "@/admin/shared/ActionDropdown";
+import type { ClienteInterface } from "../interfaces/cliente.interface";
 
 interface Customer {
   id: number;
@@ -29,9 +31,10 @@ interface Customer {
 
 interface CustomersTableProps {
   customers: Customer[];
+  onSelectCustomer: (c: ClienteInterface) => void;
 }
 
-export function ListaContainer({ customers }: CustomersTableProps) {
+export function ListaContainer({ customers, onSelectCustomer }: CustomersTableProps) {
   return (
     <div className="rounded-md border">
       <Table>
@@ -45,7 +48,7 @@ export function ListaContainer({ customers }: CustomersTableProps) {
             <TableHead>Número de Documento</TableHead>
             <TableHead>Medio de Ingreso</TableHead>
             {/* <TableHead>Fecha de Creación</TableHead> */}
-            <TableHead className="text-right">Acciones</TableHead>
+            <TableHead>Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -66,21 +69,21 @@ export function ListaContainer({ customers }: CustomersTableProps) {
                   </span>
                 </TableCell>
                 {/* <TableCell className="text-xs">{customer.created_at}</TableCell> */}
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem className="cursor-pointer">Ver</DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">Editar</DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer text-destructive">
-                        Eliminar
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                <TableCell className="text-center">
+                  <ActionDropdown
+                    options={[
+                      {
+                        label: "Ver",
+                        onClick: () => onSelectCustomer(customer as ClienteInterface),
+                      },
+                      { label: "Editar", href: `/clientes/${customer.id}/edit` },
+                      // {
+                      //   label: "Eliminar",
+                      //   destructive: true,
+                      //   onClick: () => console.log("Eliminar", customer.id),
+                      // },
+                    ]}
+                  />
                 </TableCell>
               </TableRow>
             ))

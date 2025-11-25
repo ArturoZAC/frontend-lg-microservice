@@ -1,22 +1,22 @@
 export interface ClienteInterface {
-  id              : number;
-  nombres         : string;
-  apellidos       : string;
-  empresa         : string;
-  celular         : string;
-  password        : string;
-  edad            : number;
-  email           : string;
-  sexo            : string;
-  medio_ingreso   : string;
-  registro        : string;
-  tipo_documento  : string;
+  id: number;
+  nombres: string;
+  apellidos: string;
+  empresa: string;
+  celular: string;
+  password: string;
+  edad: number;
+  email: string;
+  sexo: string;
+  medio_ingreso: string;
+  registro: string;
+  tipo_documento: string;
   numero_documento: string;
-  estado          : number;
-  antiguo         : number;
-  puntuacion      :  number;
+  estado: number;
+  antiguo: number;
+  puntuacion: number;
+  created_at: string;
 }
-
 
 export interface ClientesResponse {
   data: ClienteInterface[];

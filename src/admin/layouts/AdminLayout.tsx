@@ -1,18 +1,16 @@
-import { useState } from "react";
-import { Header } from "../components/Header";
-import { Sidebar } from "../components/SideBar";
+// import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
-// interface DashboardLayoutProps {
-//   children: React.ReactNode;
-// }
+import { Header } from "../components/Header";
+import { Sidebar } from "../components/SideBar";
+import { useUIUXStore } from "../store/uiux.store";
 
 export function AdminLayout(/* { children }: DashboardLayoutProps */) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { isSideBarOpen, toggleSideBar } = useUIUXStore();
 
   return (
     <div className="flex h-screen bg-background text-foreground">
-      <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      <Sidebar open={isSideBarOpen} onToggle={toggleSideBar} />
       <div className="flex flex-col flex-1">
         <Header />
         <main className="flex-1 overflow-auto">

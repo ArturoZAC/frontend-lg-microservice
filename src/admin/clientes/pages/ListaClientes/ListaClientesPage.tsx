@@ -1,145 +1,250 @@
+// 1. Librerías externas
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, Search } from "lucide-react";
+import { Download, FileDown, Plus, Search } from "lucide-react";
+import { toast } from "sonner";
+
+// 2. Componentes globales de UI
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+// 3. Componentes compartidos del admin
+import { SelectFiltro } from "@/admin/shared/SelectFiltro";
+import { PaginationFooter } from "@/admin/shared/PaginationFooter";
+
+// 4. Hooks personalizados
 import { useClientes } from "./hooks/useClientes";
+import { useClientesFilters } from "./hooks/useClientesFilters";
+import { useExportClientes } from "./hooks/useExportClientes";
+
+// 5. Componentes locales
 import { ListaContainer } from "./components/ListaContainer";
+import { ListaContainerSkeleton } from "./ui/ListaContainerSkeleton";
+import { ClienteDetailModal } from "./components/ClienteDetailModal";
+import { type ClienteInterface } from "./interfaces/cliente.interface";
+
+const registroOptions = [
+  { label: "Todos", value: "all" },
+  { label: "Sistema", value: "sistema" },
+  { label: "Página web", value: "pagina_web" },
+];
+
+const medioOptions = [
+  { label: "Todos", value: "all" },
+  { label: "Facebook", value: "facebook" },
+  { label: "WhatsApp", value: "whatsapp" },
+  { label: "Google", value: "google" },
+  { label: "Instagram", value: "instagram" },
+  { label: "Post venta", value: "post_venta" },
+  { label: "Recomendación", value: "recomendacion" },
+  { label: "Logos", value: "logos" },
+];
+
+const tipoDocumentoOptions = [
+  { label: "Todos", value: "all" },
+  { label: "DNI", value: "dni" },
+  { label: "RUC", value: "ruc" },
+  { label: "DNI Extranjero", value: "dni_extranjeria" },
+];
 
 export function ListaClientesPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [registroFilter, setRegistroFilter] = useState<string | null>(null);
-  const [medioFilter, setMedioFilter] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedClient, setSelectedClient] = useState<ClienteInterface | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data, isLoading } = useClientes({
+  const {
+    currentPage,
+    searchTerm,
+    debounceSearch,
+    tipoDocumentoFilter,
+    medioFilter,
+    perPage,
+    registroFilter,
+    setCurrentPage,
+    setSearchTerm,
+    setMedioFilter,
+    setRegistroFilter,
+    setTipoDocumentoFilter,
+    setPerPage,
+    resetToFirstPage,
+  } = useClientesFilters(300);
+
+  const { clientesQuery, prefetchNextPage } = useClientes({
     page: currentPage,
-    search: searchTerm,
-    tipo_documento: registroFilter ?? undefined,
+    search: debounceSearch,
+    registro: registroFilter ?? undefined,
+    tipo_documento: tipoDocumentoFilter ?? undefined,
     medio_ingreso: medioFilter ?? undefined,
-    per_page: 10,
+    per_page: perPage ?? 10,
   });
 
-  // useEffect(() => {
-  //   console.log({data: data?.data});
-  // }, [])
-  
+  const { exportarPaginaActual, exportarTodo, isExporting } = useExportClientes();
+
+  const { data, isLoading } = clientesQuery;
+
   const clientes = data?.data ?? [];
   const total = data?.total ?? 0;
   const lastPage = data?.last_page ?? 1;
 
-  const resetToFirstPage = () => setCurrentPage(1);
+  const handleExportarPaginaActual = async () => {
+    const result = await exportarPaginaActual({
+      page: currentPage,
+      per_page: perPage,
+      search: debounceSearch || undefined,
+      registro: registroFilter === "all" ? undefined : registroFilter || undefined,
+      medio_ingreso: medioFilter === "all" ? undefined : medioFilter || undefined,
+      tipo_documento: tipoDocumentoFilter === "all" ? undefined : tipoDocumentoFilter || undefined,
+    });
+
+    if (result.success) {
+      toast.success(`${result.total} clientes de la página actual exportados`);
+    } else {
+      toast.error(result.error || "Error al exportar");
+    }
+  };
+
+  const handleExportarTodo = async () => {
+    const result = await exportarTodo({
+      search: debounceSearch || undefined,
+      registro: registroFilter === "all" ? undefined : registroFilter || undefined,
+      medio_ingreso: medioFilter === "all" ? undefined : medioFilter || undefined,
+      tipo_documento: tipoDocumentoFilter === "all" ? undefined : tipoDocumentoFilter || undefined,
+    });
+
+    if (result.success) {
+      toast.success(`${result.total} clientes exportados exitosamente`);
+    } else {
+      toast.error(result.error || "Error al exportar");
+    }
+  };
 
   return (
-    <div className="space-y-4">
-      {/* Search & filters */}
-      <div className="bg-card border rounded-lg p-4 space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">
+    <>
+      <ClienteDetailModal
+        cliente={selectedClient}
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
 
-          {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar cliente..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
+      <div className="space-y-4">
+        {/* Search & filters */}
+        <div className="bg-card  space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-end">
+            {/* Search */}
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              {/* <Label>Buscador</Label> */}
+              <Input
+                placeholder="Buscar Cliente, Empresa, Celular, Nro Documento..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  resetToFirstPage();
+                }}
+              />
+            </div>
+
+            {/* Registro */}
+            <SelectFiltro
+              label="Registro"
+              value={registroFilter}
+              onChange={(val) => {
+                setRegistroFilter(val);
                 resetToFirstPage();
               }}
+              placeholder="Registro"
+              options={registroOptions}
             />
-          </div>
 
-          {/* Registro */}
-          <Select
-            value={registroFilter || "all"}
-            onValueChange={(value) => {
-              setRegistroFilter(value === "all" ? null : value);
-              resetToFirstPage();
-            }}
-          >
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Registro" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="dni">DNI</SelectItem>
-              <SelectItem value="ruc">RUC</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Medio ingreso */}
+            <SelectFiltro
+              label="Medio Ingreso"
+              value={medioFilter}
+              onChange={(val) => {
+                setMedioFilter(val);
+                resetToFirstPage();
+              }}
+              placeholder="Medio"
+              options={medioOptions}
+            />
 
-          {/* Medio ingreso */}
-          <Select
-            value={medioFilter || "all"}
-            onValueChange={(value) => {
-              setMedioFilter(value === "all" ? null : value);
-              resetToFirstPage();
-            }}
-          >
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Medio" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="logos">Logos</SelectItem>
-              <SelectItem value="google">Google</SelectItem>
-              <SelectItem value="whatsapp">WhatsApp</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Tipo de documento */}
+            <SelectFiltro
+              label="Tipo de documento"
+              value={tipoDocumentoFilter}
+              onChange={(val) => {
+                setTipoDocumentoFilter(val);
+                resetToFirstPage();
+              }}
+              placeholder="Tipo de documento"
+              options={tipoDocumentoOptions}
+            />
 
-          {/* Registrar */}
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Registrar cliente
-          </Button>
-        </div>
-      </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="gap-2" disabled={isExporting || total === 0}>
+                  <Download className="h-4 w-4" />
+                  {isExporting ? "Exportando..." : "Exportar"}
+                </Button>
+              </DropdownMenuTrigger>
 
-      {/* Tabla */}
-      <div className="bg-card border rounded-lg overflow-hidden">
-        {isLoading ? (
-          <p className="p-4 text-center">Cargando...</p>
-        ) : (
-          <ListaContainer customers={clientes} />
-        )}
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportarPaginaActual} className="text-xs">
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Página actual ({clientes.length} registros)
+                </DropdownMenuItem>
 
-        {/* Footer de paginación */}
-        <div className="px-6 py-4 border-t flex justify-between items-center bg-muted/30">
-          <p className="text-sm text-muted-foreground">
-            Total: {total} Clientes
-          </p>
+                <DropdownMenuItem onClick={handleExportarTodo} className="text-xs">
+                  <Download className="h-4 w-4 mr-2" />
+                  Exportar todo ({total} registros)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          <div className="flex gap-2 justify-center items-center">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((prev) => prev - 1)}
-            >
-              <ChevronLeft />
-            </Button>
-
-            <span className="text-sm">
-              Página {currentPage} de {lastPage}
-            </span>
-
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage === lastPage}
-              onClick={() => setCurrentPage((prev) => prev + 1)}
-            >
-              <ChevronRight />
+            {/* Registrar */}
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Registrar cliente
             </Button>
           </div>
         </div>
+
+        {/* Tabla */}
+        <div className="bg-card border rounded-lg overflow-hidden">
+          {isLoading ? (
+            <ListaContainerSkeleton />
+          ) : (
+            <ListaContainer
+              customers={clientes}
+              onSelectCustomer={(cliente) => {
+                setSelectedClient(cliente);
+                setIsModalOpen(true);
+              }}
+            />
+          )}
+          {/* {isLoading ? <ListaContainer customers={clientes} /> : <ListaContainerSkeleton />} */}
+
+          <PaginationFooter
+            wordPage="Clientes"
+            total={total}
+            perPage={perPage}
+            currentPage={currentPage}
+            lastPage={lastPage}
+            onChangePage={setCurrentPage}
+            onChangePerPage={(num) => {
+              setPerPage(num);
+              resetToFirstPage();
+            }}
+            perPageOptions={[10, 20, 50, 100]}
+            onPrefetchNext={prefetchNextPage}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

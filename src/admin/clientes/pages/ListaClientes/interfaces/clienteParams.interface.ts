@@ -1,7 +1,8 @@
 export interface ClientesParams {
-  search?        : string;
+  search?: string;
+  registro?: string;
   tipo_documento?: string;
-  medio_ingreso? : string;
-  per_page?      : number;
-  page?          : number
+  medio_ingreso?: string;
+  per_page?: number;
+  page?: number;
 }
