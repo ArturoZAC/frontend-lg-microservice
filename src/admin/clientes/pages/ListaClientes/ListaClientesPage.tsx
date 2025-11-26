@@ -29,7 +29,7 @@ export function ListaClientesPage() {
   // useEffect(() => {
   //   console.log({data: data?.data});
   // }, [])
-  
+
   const clientes = data?.data ?? [];
   const total = data?.total ?? 0;
   const lastPage = data?.last_page ?? 1;
@@ -41,7 +41,6 @@ export function ListaClientesPage() {
       {/* Search & filters */}
       <div className="bg-card border rounded-lg p-4 space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
-
           {/* Search */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -111,9 +110,7 @@ export function ListaClientesPage() {
 
         {/* Footer de paginación */}
         <div className="px-6 py-4 border-t flex justify-between items-center bg-muted/30">
-          <p className="text-sm text-muted-foreground">
-            Total: {total} Clientes
-          </p>
+          <p className="text-sm text-muted-foreground">Total: {total} Clientes</p>
 
           <div className="flex gap-2 justify-center items-center">
             <Button

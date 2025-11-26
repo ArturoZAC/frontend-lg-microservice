@@ -1,4 +1,10 @@
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface Option {
   label: string;
@@ -14,10 +20,7 @@ interface Props {
 
 export function SelectFiltro({ value, onChange, placeholder, options }: Props) {
   return (
-    <Select
-      value={value || "all"}
-      onValueChange={(val) => onChange(val === "all" ? null : val)}
-    >
+    <Select value={value || "all"} onValueChange={(val) => onChange(val === "all" ? null : val)}>
       <SelectTrigger className="w-full sm:w-40">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
