@@ -23,6 +23,9 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { useCrearContacto } from "../hooks/useCrearContacto";
+import { toast } from "sonner";
+
 interface ContactosCardProps {
   cliente: any;
   contactos: any[];
@@ -49,7 +52,7 @@ export function ContactosCard({ cliente, contactos, onAddContacto }: ContactosCa
     handleSubmit,
     reset,
     control,
-    setValue,
+    // setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(contactoSchema),
@@ -62,10 +65,25 @@ export function ContactosCard({ cliente, contactos, onAddContacto }: ContactosCa
     },
   });
 
+  const crearContactoMutation = useCrearContacto();
+
   const onSubmit = (data: any) => {
-    onAddContacto({ ...data, cliente_id: cliente.id });
-    reset();
-    setShowForm(false);
+    const payload = {
+      ...data,
+      cliente_id: cliente.id,
+    };
+
+    crearContactoMutation.mutate(payload, {
+      onSuccess: (contactoCreado) => {
+        onAddContacto(contactoCreado);
+        toast.success("Contacto creado correctamente");
+        reset();
+        setShowForm(false);
+      },
+      onError: () => {
+        toast.error("Ocurrió un error al crear el contacto");
+      },
+    });
   };
 
   return (
