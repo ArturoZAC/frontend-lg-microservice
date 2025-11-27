@@ -6,8 +6,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useUiuxStore } from "@/store/uiux.store";
 
 export function Header() {
+  // const { title } = useUiuxStore();
+
   return (
     <header className="border-b border-border bg-card px-6 py-4 flex items-center justify-between">
       <div>
