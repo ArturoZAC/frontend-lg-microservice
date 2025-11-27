@@ -27,6 +27,7 @@ import { ListaContainer } from "./components/ListaContainer";
 import { ListaContainerSkeleton } from "./ui/ListaContainerSkeleton";
 import { ClienteDetailModal } from "./components/ClienteDetailModal";
 import { type ClienteInterface } from "./interfaces/cliente.interface";
+import { useNavigate } from "react-router-dom";
 
 const registroOptions = [
   { label: "Todos", value: "all" },
@@ -55,6 +56,7 @@ const tipoDocumentoOptions = [
 export function ListaClientesPage() {
   const [selectedClient, setSelectedClient] = useState<ClienteInterface | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const {
     currentPage,
@@ -207,7 +209,7 @@ export function ListaClientesPage() {
             </DropdownMenu>
 
             {/* Registrar */}
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={() => navigate("/agregar")}>
               <Plus className="h-4 w-4" />
               Registrar cliente
             </Button>

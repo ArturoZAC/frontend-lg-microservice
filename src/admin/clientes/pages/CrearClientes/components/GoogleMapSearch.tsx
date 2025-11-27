@@ -1,19 +1,21 @@
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useRef, useState } from "react";
+import { crearUbicacionAction } from "../actions/crearClienteUbicacion.action";
+import { toast } from "sonner";
 
 interface Props {
   idCliente: number;
-  onLocationSelect?: (data: {
+  /*   onLocationSelect?: (data: {
     direccion: string;
     lat: number;
     lng: number;
     pais?: string;
     departamento?: string;
     distrito?: string;
-  }) => void;
+  }) => void; */
 }
 
-export const GoogleMapSearch: React.FC<Props> = ({ onLocationSelect, idCliente }) => {
+export const GoogleMapSearch: React.FC<Props> = ({ /* onLocationSelect, */ idCliente }) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<any>(null);
   const marker = useRef<any>(null);
@@ -101,12 +103,6 @@ export const GoogleMapSearch: React.FC<Props> = ({ onLocationSelect, idCliente }
           mapInstance.current.setZoom(16);
 
           setCoords({ lat, lng });
-
-          // onLocationSelect?.({
-          //   direccion: place.formatted_address ?? "",
-          //   lat,
-          //   lng,
-          // });
         });
       }
     });
@@ -125,9 +121,9 @@ export const GoogleMapSearch: React.FC<Props> = ({ onLocationSelect, idCliente }
     const data = await res.json();
 
     const info = {
-      idCliente,
-      lat: coords.lat,
-      lng: coords.lng,
+      cliente_id: "" + idCliente,
+      latitud: "" + coords.lat,
+      longitud: "" + coords.lng,
       pais: data.address.country,
       departamento: data.address.state || data.address.region,
       distrito:
@@ -136,19 +132,16 @@ export const GoogleMapSearch: React.FC<Props> = ({ onLocationSelect, idCliente }
         data.address.town ||
         data.address.city ||
         data.address.village,
-      // direccionCompleta: data.display_name,
     };
 
-    console.log("📍 Datos completos de ubicación:", info);
+    // console.log("📍 Datos completos de ubicación:", info);
 
-    // onLocationSelect?.({
-    //   direccion: info.direccionCompleta,
-    //   lat: info.lat,
-    //   lng: info.lng,
-    //   pais: info.pais,
-    //   departamento: info.departamento,
-    //   distrito: info.distrito,
-    // });
+    try {
+      const response = await crearUbicacionAction(info);
+      toast.success("✅ Ubicación guardada exitosamente:", response);
+    } catch {
+      toast.error("❌ Error al guardar ubicación:");
+    }
   };
 
   return (

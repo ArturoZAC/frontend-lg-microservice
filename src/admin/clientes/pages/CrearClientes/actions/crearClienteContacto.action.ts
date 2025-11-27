@@ -12,10 +12,7 @@ export interface CrearContactoDto {
 export const crearContactoAction = async (data: CrearContactoDto) => {
   const { cliente_id, ...payload } = data;
 
-  const response = await clientesApi.post(
-    `/clientes/${cliente_id}/contactos`,
-    payload
-  );
+  const response = await clientesApi.post(`/clientes/${cliente_id}/contactos`, payload);
 
   return response.data;
 };
