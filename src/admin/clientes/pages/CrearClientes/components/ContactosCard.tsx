@@ -25,6 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useCrearContacto } from "../hooks/useCrearContacto";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ContactosCardProps {
   cliente: any;
@@ -66,6 +67,7 @@ export function ContactosCard({ cliente, contactos, onAddContacto }: ContactosCa
   });
 
   const crearContactoMutation = useCrearContacto();
+  const queryClient = useQueryClient();
 
   const onSubmit = (data: any) => {
     const payload = {
@@ -75,6 +77,7 @@ export function ContactosCard({ cliente, contactos, onAddContacto }: ContactosCa
 
     crearContactoMutation.mutate(payload, {
       onSuccess: (contactoCreado) => {
+        queryClient.invalidateQueries({ queryKey: ["contactos", cliente.id] });
         onAddContacto(contactoCreado);
         toast.success("Contacto creado correctamente");
         reset();
@@ -194,7 +197,7 @@ export function ContactosCard({ cliente, contactos, onAddContacto }: ContactosCa
         )}
 
         {!showForm && (
-          <Button onClick={() => setShowForm(true)} variant="outline" className="w-full">
+          <Button onClick={() => setShowForm(true)} variant="secondary" className="w-full">
             Añadir Contacto
           </Button>
         )}

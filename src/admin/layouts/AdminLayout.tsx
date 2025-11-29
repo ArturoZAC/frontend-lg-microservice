@@ -14,6 +14,7 @@ export function AdminLayout(/* { children }: DashboardLayoutProps */) {
       <div className="flex flex-col flex-1">
         <Header />
         <main className="flex-1 overflow-auto">
+          {/* <div className="p-6 mx-auto flex justify-center"> */}
           <div className="p-6">
             <Outlet />
           </div>

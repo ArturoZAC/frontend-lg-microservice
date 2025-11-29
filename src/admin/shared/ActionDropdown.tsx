@@ -6,6 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 export interface ActionOption {
   label: string; // Texto: "Ver", "Editar", "Eliminar"
@@ -19,6 +20,8 @@ interface ActionDropdownProps {
 }
 
 export function ActionDropdown({ options }: ActionDropdownProps) {
+  const navigate = useNavigate();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -29,7 +32,8 @@ export function ActionDropdown({ options }: ActionDropdownProps) {
 
       <DropdownMenuContent
         align="end"
-        className="bg-[#001d3d] text-white border border-white/20 rounded-md shadow-md"
+        // className="bg-[#001d3d] text-white border border-white/20 rounded-md shadow-md"
+        className="bg-secondary text-white border border-white/20 rounded-md shadow-md"
       >
         {options.map((item, i) => (
           <DropdownMenuItem
@@ -38,7 +42,7 @@ export function ActionDropdown({ options }: ActionDropdownProps) {
               item.destructive ? "text-red-400 hover:text-red-500" : "text-white"
             }`}
             onClick={() => {
-              if (item.href) window.location.href = item.href;
+              if (item.href) navigate(item.href);
               if (item.onClick) item.onClick();
             }}
           >

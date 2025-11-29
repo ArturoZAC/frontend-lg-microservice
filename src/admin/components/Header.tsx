@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useUiuxStore } from "@/store/uiux.store";
+// import { useUiuxStore } from "@/store/uiux.store";
 
 export function Header() {
   // const { title } = useUiuxStore();

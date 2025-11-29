@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import React, { useEffect, useRef, useState } from "react";
 import { crearUbicacionAction } from "../actions/crearClienteUbicacion.action";
 import { toast } from "sonner";
+import { useUbicacion } from "../../EditarClientes/hooks/useUbicacion";
+import { actualizarUbicacionAction } from "../../EditarClientes/actions/actualizarUbicacion.action";
 
 interface Props {
   idCliente: number;
@@ -26,6 +28,12 @@ export const GoogleMapSearch: React.FC<Props> = ({ /* onLocationSelect, */ idCli
     lat: null,
     lng: null,
   });
+
+  const { data: ubicacion } = useUbicacion(idCliente);
+
+  // useEffect(() => {
+  //   console.log({ ubicacion });
+  // }, [ubicacion]);
 
   const loadGoogleMaps = () => {
     return new Promise<void>((resolve, reject) => {
@@ -57,37 +65,38 @@ export const GoogleMapSearch: React.FC<Props> = ({ /* onLocationSelect, */ idCli
 
   useEffect(() => {
     loadGoogleMaps().then(() => {
-      // console.log("✔ Google Maps + Places cargado");
+      const initialLat = ubicacion ? parseFloat(ubicacion.latitud) : -12.046374;
+      const initialLng = ubicacion ? parseFloat(ubicacion.longitud) : -77.042793;
 
       mapInstance.current = new window.google.maps.Map(mapRef.current!, {
-        center: { lat: -12.046374, lng: -77.042793 },
+        center: { lat: initialLat, lng: initialLng },
         zoom: 14,
       });
 
       marker.current = new window.google.maps.Marker({
         map: mapInstance.current,
-        position: { lat: -12.046374, lng: -77.042793 },
+        position: { lat: initialLat, lng: initialLng },
         draggable: true,
       });
+
+      // Actualizamos coords si existe ubicación
+      if (ubicacion) {
+        setCoords({ lat: parseFloat(ubicacion.latitud), lng: parseFloat(ubicacion.longitud) });
+      }
 
       marker.current.addListener("dragend", () => {
         const pos = marker.current.getPosition();
         const lat = pos.lat();
         const lng = pos.lng();
-
         setCoords({ lat, lng });
-
-        // onLocationSelect?.({
-        //   direccion: "",
-        //   lat,
-        //   lng,
-        // });
       });
 
       if (autocompleteInput.current) {
         autocomplete.current = new window.google.maps.places.Autocomplete(
           autocompleteInput.current,
-          { types: ["geocode"] }
+          {
+            types: ["geocode"],
+          }
         );
 
         autocomplete.current.addListener("place_changed", () => {
@@ -106,9 +115,8 @@ export const GoogleMapSearch: React.FC<Props> = ({ /* onLocationSelect, */ idCli
         });
       }
     });
-  }, []);
+  }, [ubicacion]); // ⬅️ Cuando la ubicación esté disponible, reubicamos el marker
 
-  // --------- BOTÓN PARA IMPRIMIR DATA DETALLADA ----------
   const imprimirDatos = async () => {
     if (!coords.lat || !coords.lng) {
       console.warn("No hay coordenadas seleccionadas.");
@@ -134,13 +142,18 @@ export const GoogleMapSearch: React.FC<Props> = ({ /* onLocationSelect, */ idCli
         data.address.village,
     };
 
-    // console.log("📍 Datos completos de ubicación:", info);
-
     try {
-      const response = await crearUbicacionAction(info);
-      toast.success("✅ Ubicación guardada exitosamente:", response);
+      if (ubicacion?.id) {
+        // si ya tiene id → actualizar
+        await actualizarUbicacionAction({ id: ubicacion.id, ...info });
+        toast.success("Ubicación actualizada correctamente");
+      } else {
+        // si no tiene id → crear
+        await crearUbicacionAction(info);
+        toast.success("Ubicación creada correctamente");
+      }
     } catch {
-      toast.error("❌ Error al guardar ubicación:");
+      toast.error("Error al guardar ubicación");
     }
   };
 
@@ -158,7 +171,11 @@ export const GoogleMapSearch: React.FC<Props> = ({ /* onLocationSelect, */ idCli
       <div ref={mapRef} style={{ width: "100%", height: "400px" }} className="mt-3" />
 
       {/* BOTÓN PARA MOSTRAR DATA */}
-      <Button onClick={imprimirDatos} className="mt-3 px-4 py-2 text-white rounded-lg">
+      <Button
+        onClick={imprimirDatos}
+        variant={"secondary"}
+        className="mt-3 px-4 py-2 text-white rounded-lg"
+      >
         Guarda Ubicacion
       </Button>
     </div>

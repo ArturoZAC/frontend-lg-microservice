@@ -1,6 +1,7 @@
 // 1. Librerías externas
 import { useState } from "react";
 import { Download, FileDown, Plus, Search } from "lucide-react";
+import { IconFileTypeXls } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 // 2. Componentes globales de UI
@@ -28,6 +29,7 @@ import { ListaContainerSkeleton } from "./ui/ListaContainerSkeleton";
 import { ClienteDetailModal } from "./components/ClienteDetailModal";
 import { type ClienteInterface } from "./interfaces/cliente.interface";
 import { useNavigate } from "react-router-dom";
+import { clientes } from "./mock/cliente.mock";
 
 const registroOptions = [
   { label: "Todos", value: "all" },
@@ -88,7 +90,7 @@ export function ListaClientesPage() {
 
   const { data, isLoading } = clientesQuery;
 
-  const clientes = data?.data ?? [];
+  // const clientes = data?.data ?? [];
   const total = data?.total ?? 0;
   const lastPage = data?.last_page ?? 1;
 
@@ -188,9 +190,12 @@ export function ListaClientesPage() {
             />
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="gap-2" disabled={isExporting || total === 0}>
-                  <Download className="h-4 w-4" />
+              <DropdownMenuTrigger
+                asChild
+                // className="bg-secondary/90 text-white hover:bg-secondary hover:text-white"
+              >
+                <Button variant="secondary" className="gap-2" disabled={isExporting || total === 0}>
+                  <IconFileTypeXls className="h-4 w-4" />
                   {isExporting ? "Exportando..." : "Exportar"}
                 </Button>
               </DropdownMenuTrigger>
@@ -209,7 +214,7 @@ export function ListaClientesPage() {
             </DropdownMenu>
 
             {/* Registrar */}
-            <Button className="gap-2" onClick={() => navigate("/agregar")}>
+            <Button className="gap-2" onClick={() => navigate("/agregar-cliente")}>
               <Plus className="h-4 w-4" />
               Registrar cliente
             </Button>

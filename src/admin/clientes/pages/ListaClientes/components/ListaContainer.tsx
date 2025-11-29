@@ -16,6 +16,11 @@ import {
 } from "@/components/ui/table";
 import { ActionDropdown } from "@/admin/shared/ActionDropdown";
 import type { ClienteInterface } from "../interfaces/cliente.interface";
+import { setWordPascalCase } from "../helpers/setWordPascalCase";
+import { medioColors } from "../helpers/colors";
+import { medioIcons } from "../helpers/medioIcons";
+import { CopyText } from "@/admin/shared/CopyText";
+import { getShortName } from "../helpers/getShortName";
 
 interface Customer {
   id: number;
@@ -57,15 +62,42 @@ export function ListaContainer({ customers, onSelectCustomer }: CustomersTablePr
               <TableRow key={customer.id}>
                 <TableCell className="font-mono text-xs">{customer.id}</TableCell>
                 <TableCell className="font-medium">
-                  {customer.nombres} {customer.apellidos}
+                  <div className="flex flex-row items-center justify-center">
+                    {getShortName(customer.nombres, customer.apellidos)}
+                    {/* <CopyText text={`${customer.nombres} ${customer.apellidos}`} /> */}
+                    <CopyText text={getShortName(customer.nombres, customer.apellidos)} />
+                  </div>
                 </TableCell>
-                <TableCell>{customer.empresa}</TableCell>
-                <TableCell>{customer.celular}</TableCell>
-                <TableCell className="text-xs">{customer.tipo_documento}</TableCell>
-                <TableCell className="font-mono text-xs">{customer.numero_documento}</TableCell>
                 <TableCell>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    {customer.medio_ingreso}
+                  <div className="flex flex-row items-center justify-center">
+                    {customer.empresa}
+                    <CopyText text={customer.empresa} />
+                  </div>
+                </TableCell>
+                <TableCell className="font-mono">
+                  <div className="flex flex-row items-center justify-center">
+                    {customer.celular}
+                    <CopyText text={customer.celular} />
+                  </div>
+                </TableCell>
+                <TableCell className="text-xs">
+                  {setWordPascalCase(customer.tipo_documento)}
+                </TableCell>
+                <TableCell className="font-mono">
+                  <div className="flex flex-row items-center justify-center">
+                    {customer.numero_documento}
+                    <CopyText text={customer.numero_documento} />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      medioColors[setWordPascalCase(customer.medio_ingreso)] ||
+                      "bg-gray-200 text-gray-800"
+                    }`}
+                  >
+                    {medioIcons[setWordPascalCase(customer.medio_ingreso)]}
+                    {setWordPascalCase(customer.medio_ingreso)}
                   </span>
                 </TableCell>
                 {/* <TableCell className="text-xs">{customer.created_at}</TableCell> */}
@@ -76,12 +108,7 @@ export function ListaContainer({ customers, onSelectCustomer }: CustomersTablePr
                         label: "Ver",
                         onClick: () => onSelectCustomer(customer as ClienteInterface),
                       },
-                      { label: "Editar", href: `/clientes/${customer.id}/edit` },
-                      // {
-                      //   label: "Eliminar",
-                      //   destructive: true,
-                      //   onClick: () => console.log("Eliminar", customer.id),
-                      // },
+                      { label: "Editar", href: `/editar-cliente/${customer.id}` },
                     ]}
                   />
                 </TableCell>

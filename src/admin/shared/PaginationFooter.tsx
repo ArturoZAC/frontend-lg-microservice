@@ -91,7 +91,7 @@ export const PaginationFooter = ({
           {showButtons && (
             <div className="flex items-center gap-4">
               <Button
-                variant="outline"
+                variant="default"
                 size="sm"
                 disabled={currentPage === 1}
                 onClick={() => onChangePage(currentPage - 1)}
@@ -104,7 +104,7 @@ export const PaginationFooter = ({
               </span>
 
               <Button
-                variant="outline"
+                variant="default"
                 size="sm"
                 disabled={currentPage === lastPage}
                 onClick={() => onChangePage(currentPage + 1)}
