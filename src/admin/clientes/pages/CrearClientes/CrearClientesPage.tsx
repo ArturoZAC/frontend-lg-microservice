@@ -3,7 +3,7 @@ import { ContactosCard } from "./components/ContactosCard";
 import { GoogleMapSearch } from "./components/GoogleMapSearch";
 import type { ClienteInterface } from "../ListaClientes/interfaces/cliente.interface";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+// import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ClienteForm } from "../../components/ClienteForm";
 import { IconX } from "@tabler/icons-react";

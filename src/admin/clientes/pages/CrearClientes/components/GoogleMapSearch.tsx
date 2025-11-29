@@ -22,7 +22,8 @@ export const GoogleMapSearch: React.FC<Props> = ({ /* onLocationSelect, */ idCli
   const mapInstance = useRef<any>(null);
   const marker = useRef<any>(null);
   const autocompleteInput = useRef<HTMLInputElement | null>(null);
-  const autocomplete = useRef<google.maps.places.Autocomplete | null>(null);
+  // const autocomplete = useRef<google.maps.places.Autocomplete | null>(null);
+  const autocomplete = useRef<any>(null);
 
   const [coords, setCoords] = useState<{ lat: number | null; lng: number | null }>({
     lat: null,
